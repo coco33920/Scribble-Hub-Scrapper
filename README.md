@@ -21,20 +21,25 @@ The book API is WIP, currently there is some informations and stats, usage:
     book = api.Book(id) #the id must be an integer and is the id of the book
     book.name() #return the name of the book
     book.extract_infos() #return the informations ok the books, namely : author name, author profil page link
-    #the permalink of the book, the title of the book, the status (ongoing,etc.)
+    #the permalink of the book, the title of the book, cover, the status (ongoing,etc.)
     #the tag list, genre list, views, reader, favorites, chapters and chapters/week
     
     book.extract_stats() #return basic stats of the books, namely : average views, average words
     #pages, total views (All), total views (Chapters), and word count
 
+    
+    book.top_chapters() #return the top10 of most favorite chapters
+    book.list_of_chapters() #return the full list of tuple of chapters name with their link
+    
+
 ```
 
 ### Todo
-* Expand the book API (chapters list etc.)
-* Add an author API
-* Trending ? Search ?
-* Implementing the API in a flask app and/or discord bot
-
+* [X] Expand the book API ?
+* [ ] Add an author API
+* [ ] Trending
+* [ ] Implementing the API in a flask app and/or discord bot
+* [ ] Search 
 
 ## Author
 

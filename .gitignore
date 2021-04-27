@@ -2,3 +2,4 @@ api.py
 .idea/
 *.iml
 *.pyc
+/test.py
