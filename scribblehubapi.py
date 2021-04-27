@@ -57,6 +57,11 @@ class Book:
         text = [(s.a.attrs['title'], s.a.attrs['href']) for s in text]
         return text
 
+    def top_chapters(self):
+        s = self.stat_content.find(class_='top_fav_chp')
+        st = [*s.children]
+        return [(s.a.text, s.a.attrs['href'], int(s.text.split(" ")[-1][1:-1])) for s in st]
+
     def __get_cover(self):
         return self.content.img['src']
 
