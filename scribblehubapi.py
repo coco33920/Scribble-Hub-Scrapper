@@ -1,6 +1,6 @@
 import bs4 as parser
 import faster_than_requests
-
+import requests
 class Book:
     def __init__(self, uuid):
         self.uuid = uuid
@@ -47,12 +47,25 @@ class Book:
         url = text.previous.get('href')
         return (name,url)
 
+    def list_of_chapters(self):
+        url =  "https://www.scribblehub.com/wp-admin/admin-ajax.php"
+        a = {"action":"wi_gettocchp", "strSID":str(self.uuid), "strmypostid":"0","strFic":"yes"}
+        results = requests.post(url, a).text
+        parse = parser.BeautifulSoup(results, "html.parser")
+        text = parse.contents[0]
+        text = text.findAll('li')
+        text = [(s.a.attrs['title'], s.a.attrs['href']) for s in text]
+        return text
+
+    def __get_cover(self):
+        return self.content.img['src']
 
     def extract_infos(self):
         """Extract informations
             - Author
             - AuthorLink
             - Title
+            - Image Link
             - Permalink
             - Synopsis
             - Status
@@ -69,6 +82,7 @@ class Book:
         infos['author'] = author
         infos['author_link'] = author_link
         infos['title'] = self.name()
+        infos['cover'] = self.__get_cover()
         infos['permalink'] = self.__extract_canonical__()
         infos['status'] = self.__status__()
         infos.update(self.__extract_base_stats__())
@@ -84,7 +98,6 @@ class Book:
         stats = list(map(lambda g: g.replace('\n', ''), stats))
         stats = list(map(lambda g: tuple(g.split(':')), stats))
         return dict(stats)
-
 
     def __extract__(self):
         url = "https://www.scribblehub.com/?p="+str(self.uuid)
