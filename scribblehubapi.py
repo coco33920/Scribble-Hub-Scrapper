@@ -1,13 +1,37 @@
+import bs4
 import bs4 as parser
 import faster_than_requests
 import requests
 
 
 class Book:
+
+    @staticmethod
+    def request_ajax(*infos):
+        a = dict(infos)
+        url = "https://www.scribblehub.com/wp-admin/admin-ajax.php"
+        print(a)
+        return requests.post(url, a)
+
     def __init__(self, uuid):
         self.uuid = uuid
-        self.content = self.__extract__()
-        self.stat_content = self.__extract_stats_page__()
+
+    def basic_infos(self):
+        a = Book.request_ajax(("action","wi_getcache_fp_seriesinfo"), ("intPostID", "173303"), ("isMobile", "173303"))
+        print(a)
+        parsed = bs4.BeautifulSoup(a.text, "lxml")
+        cover = parsed.img['src']
+        all_links = parsed.findAll('a')
+        permalink = all_links[0]['href']
+        title = all_links[0].text
+        author_link = all_links[1]['href']
+        author = all_links[1].text
+        genre_list = [all_links[a].text for a in range(2, len(all_links))]
+        genre_string = " ".join(genre_list)
+        total_len = 9 + len(title) + len(author) + len(genre_string)
+        synopsis = parsed.text.replace('\n', '')[total_len:].replace("more>>","\n").replace("<<less", "\n")
+        return {"title": title, "permalink": permalink, "author_link": author_link, "author": author,
+                "genre_list": genre_list, "synopsis": synopsis, "cover": cover}
 
     def name(self):
         return self.content.title.string.split("|")[0].strip()
